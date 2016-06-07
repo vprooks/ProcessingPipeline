@@ -16,8 +16,7 @@ let main argv =
     Logger.Log("Delays, ms: @loop=300, @input=200,  @internal=500,  @output=100")
     Logger.Log("Loop starts, 5 messages will be sent, with 10% chance of message corruption")
     for i in 0..5 do
-//        let task: ProcessingTask = if rnd.NextDouble() > 0.1 then Some("Task id:<" + i.ToString() + ">") else None        
-        let task: ProcessingTask = if i <> 1 then Some("Task id:<" + i.ToString() + ">") else None
+        let task: ProcessingTask = if rnd.NextDouble() > 0.1 then Some("Task id:<" + i.ToString() + ">") else None                
         match task with
         | Some t -> Logger.Log("\t(!) Sending message  ``" + t + "''")
         | None -> Logger.Log("\t(!) Input message is corrupted")
