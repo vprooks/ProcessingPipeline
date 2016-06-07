@@ -8,32 +8,32 @@ module ProcessingNode =
     let currentTime () = DateTime.UtcNow
 
     let unixDateTime () = 
-        (currentTime () - epoch).TotalMilliseconds
-
+        (currentTime () - epoch).TotalMilliseconds / 1000.0
+                  
     type Logger() =
         static let agent = MailboxProcessor.Start(fun inbox ->
             let rec messageLoop () = async {
                 let! msg = inbox.Receive()
-                printfn "[%16.2f] %s" (unixDateTime () ) msg
+                printfn "[%14.4f] %s" (unixDateTime () ) msg
                 return! messageLoop() 
                 }
             messageLoop()
             )
 
         static member Log msg = agent.Post msg
-
-    type Task = Option<string>
+        
+    type ProcessingTask = Option<string>
 
     type Message = 
         | Shutdown
-        | HereIsTaskForYou of Task
+        | HereIsTaskForYou of ProcessingTask
         | AreYouReadyToWork
         | ReadyToWork
         | StartWorking
         | FinishWorking
         
     type Node(name, delay, ?nextNode:Node) =
-        let mutable currentTask: Task = None
+        let mutable currentTask: ProcessingTask = None
         let mutable busy = false        
         let mutable workerAgent: Option<MailboxProcessor<Message>> = None
         let mailboxAgent = 
@@ -53,30 +53,30 @@ module ProcessingNode =
                             match currentTask with
                             | Some t ->
                                 match busy with
-                                | true -> log ">HereIsTaskForYou: worker is busy, dropping message"
+                                | true -> log ">> HereIsTaskForYou: worker is busy, dropping message"
                                 | false -> 
-                                    log (">HereIsTaskForYou: send task to worker: " + t)
+                                    log (">> HereIsTaskForYou: send task to worker: " + t)
                                     actor.Post (HereIsTaskForYou (Some t))
                                     // the current task is processed, drop it
                                     currentTask <- None
                             | None -> 
-                                log ">HereIsTaskForYou: task is not set yet"
+                                log ">> HereIsTaskForYou: task is not set (yet)"
                         | None ->
-                            log ">HereIsTaskForYou: worker is not set"
+                            log ">> HereIsTaskForYou: worker is not set"
                     | ReadyToWork ->
                         match workerAgent with 
                         | Some actor -> 
                             match currentTask with
                             | Some t ->
-                                log (">ReadyToWork: end task to worker: " + t)
+                                log (">> ReadyToWork: end task to worker: " + t)
                                 actor.Post (HereIsTaskForYou (Some t))
                                 // the current task is processed, drop it
                                 currentTask <- None
                             | None ->
-                                log ">ReadyToWork: task is not set yet"
+                                log ">> ReadyToWork: task is not set (yet)"
                         | None ->
-                            log ">ReadyToWork: worker is not set"
-                    | _ -> failwith ">messageLoop: unrecognized message"
+                            log ">> ReadyToWork: worker is not set"
+                    | _ -> failwith ">> messageLoop: unrecognized message"
 
                     return! messageLoop()
                     }
@@ -84,7 +84,7 @@ module ProcessingNode =
                 )
 
         let workerAgent_ =
-            let logMessageHead = "worker {" + name + "}:\t\t"
+            let logMessageHead = "worker  (" + name + "):\t"
             let log msg = Logger.Log (logMessageHead + msg)
             MailboxProcessor.Start(fun inbox ->
                 let rec messageLoop() = async {                    
@@ -97,17 +97,17 @@ module ProcessingNode =
                         match task with
                         | Some t ->
                             busy <- true
-                            log("starts working on task {" + t.ToString() + "}")
+                            log("=> starts working on task {" + t.ToString() + "}")
                             // Imitate work here, just sleep shortly
                             do! Async.Sleep delay
-                            log("finished working on task {" + t.ToString() + "}")
+                            log("<= finished working on task {" + t.ToString() + "}")
                             match nextNode with
                             | Some actor -> actor.Post (HereIsTaskForYou (Some t))
-                            | _ ->  log("next actor is not set")
+                            | _ ->  log(">> HereIsTaskForYou: next actor is not set")
                             busy <- false
                             mailboxAgent.Post ReadyToWork
                         | None ->
-                            log("received empty task")
+                            log("<> HereIsTaskForYou: received empty task")
                             mailboxAgent.Post ReadyToWork
                     | _ -> ()
 
