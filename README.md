@@ -19,70 +19,73 @@ Current implementation does not allow branching of the pipeline, each node imita
 Let us assume delay between device readings is 300ms, there are three nodes with delays 100ms, 500ms, 200ms. The device sends  5 messages, and in the example below the third message is corrupted.
 
 ```
-[1465290119514.00] Program starts
-[1465290119515.50] Sending message = Task id:<0>
-[1465290119515.50] mailbox {00}:        >HereIsTaskForYou: send task to worker: Task id:<0>
-[1465290119516.00] worker {00}:         starts working on task {Task id:<0>}
-[1465290119714.32] worker {00}:         finished working on task {Task id:<0>}
-[1465290119714.82] mailbox {01}:        >HereIsTaskForYou: send task to worker: Task id:<0>
-[1465290119714.82] worker {01}:         starts working on task {Task id:<0>}
-[1465290119714.82] mailbox {00}:        >ReadyToWork: task is not set yet
-[1465290119809.93] Sending message = Task id:<1>
-[1465290119809.93] mailbox {00}:        >HereIsTaskForYou: send task to worker: Task id:<1>
-[1465290119810.42] worker {00}:         starts working on task {Task id:<1>}
-[1465290120010.19] worker {00}:         finished working on task {Task id:<1>}
-[1465290120010.19] mailbox {01}:        >HereIsTaskForYou: worker is busy, dropping message
-[1465290120010.69] mailbox {00}:        >ReadyToWork: task is not set yet
-[1465290120110.12] Input message is corrupted
-[1465290120110.12] mailbox {00}:        >HereIsTaskForYou: task is not set yet
-[1465290120223.27] worker {01}:         finished working on task {Task id:<0>}
-[1465290120223.27] mailbox {02}:        >HereIsTaskForYou: send task to worker: Task id:<0>
-[1465290120223.27] mailbox {01}:        >ReadyToWork: end task to worker: Task id:<1>
-[1465290120223.27] worker {02}:         starts working on task {Task id:<0>}
-[1465290120223.27] worker {01}:         starts working on task {Task id:<1>}
-[1465290120331.69] worker {02}:         finished working on task {Task id:<0>}
-[1465290120332.18] worker {02}:         next actor is not set
-[1465290120332.18] mailbox {02}:        >ReadyToWork: task is not set yet
-[1465290120410.20] Sending message = Task id:<3>
-[1465290120410.70] mailbox {00}:        >HereIsTaskForYou: send task to worker: Task id:<3>
-[1465290120410.70] worker {00}:         starts working on task {Task id:<3>}
-[1465290120622.86] worker {00}:         finished working on task {Task id:<3>}
-[1465290120622.86] mailbox {01}:        >HereIsTaskForYou: worker is busy, dropping message
-[1465290120623.36] mailbox {00}:        >ReadyToWork: task is not set yet
-[1465290120710.68] Sending message = Task id:<4>
-[1465290120710.68] mailbox {00}:        >HereIsTaskForYou: send task to worker: Task id:<4>
-[1465290120711.19] worker {00}:         starts working on task {Task id:<4>}
-[1465290120724.47] worker {01}:         finished working on task {Task id:<1>}
-[1465290120724.47] mailbox {02}:        >HereIsTaskForYou: send task to worker: Task id:<1>
-[1465290120724.98] mailbox {01}:        >ReadyToWork: end task to worker: Task id:<3>
-[1465290120725.47] worker {02}:         starts working on task {Task id:<1>}
-[1465290120725.97] worker {01}:         starts working on task {Task id:<3>}
-[1465290120832.50] worker {02}:         finished working on task {Task id:<1>}
-[1465290120832.50] worker {02}:         next actor is not set
-[1465290120833.00] mailbox {02}:        >ReadyToWork: task is not set yet
-[1465290120910.72] worker {00}:         finished working on task {Task id:<4>}
-[1465290120911.22] mailbox {01}:        >HereIsTaskForYou: worker is busy, dropping message
-[1465290120911.71] mailbox {00}:        >ReadyToWork: task is not set yet
-[1465290121010.98] Sending message = Task id:<5>
-[1465290121010.98] mailbox {00}:        >HereIsTaskForYou: send task to worker: Task id:<5>
-[1465290121011.48] worker {00}:         starts working on task {Task id:<5>}
-[1465290121211.32] worker {00}:         finished working on task {Task id:<5>}
-[1465290121211.32] mailbox {01}:        >HereIsTaskForYou: worker is busy, dropping message
-[1465290121212.30] mailbox {00}:        >ReadyToWork: task is not set yet
-[1465290121224.48] worker {01}:         finished working on task {Task id:<3>}
-[1465290121224.48] mailbox {01}:        >ReadyToWork: end task to worker: Task id:<5>
-[1465290121225.98] worker {01}:         starts working on task {Task id:<5>}
-[1465290121225.98] mailbox {02}:        >HereIsTaskForYou: send task to worker: Task id:<3>
-[1465290121226.48] worker {02}:         starts working on task {Task id:<3>}
-[1465290121332.24] worker {02}:         finished working on task {Task id:<3>}
-[1465290121332.73] worker {02}:         next actor is not set
-[1465290121332.73] mailbox {02}:        >ReadyToWork: task is not set yet
-[1465290121738.83] worker {01}:         finished working on task {Task id:<5>}
-[1465290121738.83] mailbox {02}:        >HereIsTaskForYou: send task to worker: Task id:<5>
-[1465290121739.33] mailbox {01}:        >ReadyToWork: task is not set yet
-[1465290121740.83] worker {02}:         starts working on task {Task id:<5>}
-[1465290121851.80] worker {02}:         finished working on task {Task id:<5>}
-[1465290121851.80] worker {02}:         next actor is not set
-[1465290121852.79] mailbox {02}:        >ReadyToWork: task is not set yet
-[1465290123311.76] Program finished. Press ENTER to quit ...
+[1465332960.8799] Program starts
+[1465332960.8854] Nodes:                 @input=`00`, @internal=`01`, @output=`02`
+[1465332960.8859] Delays, ms: @loop=300, @input=200,  @internal=500,  @output=100
+[1465332960.8864] Loop starts, 5 messages will be sent, with 10% chance of message corruption
+[1465332960.8869]       (!) Sending message  ``Task id:<0>''
+[1465332960.8869] mailbox {00}: >> HereIsTaskForYou: send task to worker: Task id:<0>
+[1465332960.8874] worker  (00): => starts working on task {Task id:<0>}
+[1465332961.0441] worker  (00): <= finished working on task {Task id:<0>}
+[1465332961.0446] mailbox {01}: >> HereIsTaskForYou: send task to worker: Task id:<0>
+[1465332961.0451] worker  (01): => starts working on task {Task id:<0>}
+[1465332961.0456] mailbox {00}: >> ReadyToWork: task is not set (yet)
+[1465332961.1140]       (!) Input message is corrupted
+[1465332961.1140] mailbox {00}: >> HereIsTaskForYou: task is not set (yet)
+[1465332961.4149]       (!) Sending message  ``Task id:<2>''
+[1465332961.4154] mailbox {00}: >> HereIsTaskForYou: send task to worker: Task id:<2>
+[1465332961.4159] worker  (00): => starts working on task {Task id:<2>}
+[1465332961.5450] worker  (01): <= finished working on task {Task id:<0>}
+[1465332961.5455] mailbox {02}: >> HereIsTaskForYou: send task to worker: Task id:<0>
+[1465332961.5460] mailbox {01}: >> ReadyToWork: task is not set (yet)
+[1465332961.5465] worker  (02): => starts working on task {Task id:<0>}
+[1465332961.6155] worker  (00): <= finished working on task {Task id:<2>}
+[1465332961.6160] mailbox {00}: >> ReadyToWork: task is not set (yet)
+[1465332961.6165] mailbox {01}: >> HereIsTaskForYou: send task to worker: Task id:<2>
+[1465332961.6165] worker  (01): => starts working on task {Task id:<2>}
+[1465332961.6460] worker  (02): <= finished working on task {Task id:<0>}
+[1465332961.6465] worker  (02): >> HereIsTaskForYou: next actor is not set
+[1465332961.6470] mailbox {02}: >> ReadyToWork: task is not set (yet)
+[1465332961.7154]       (!) Sending message  ``Task id:<3>''
+[1465332961.7154] mailbox {00}: >> HereIsTaskForYou: send task to worker: Task id:<3>
+[1465332961.7159] worker  (00): => starts working on task {Task id:<3>}
+[1465332961.9158] worker  (00): <= finished working on task {Task id:<3>}
+[1465332961.9163] mailbox {01}: >> HereIsTaskForYou: worker is busy, dropping message
+[1465332961.9168] mailbox {00}: >> ReadyToWork: task is not set (yet)
+[1465332962.0158]       (!) Sending message  ``Task id:<4>''
+[1465332962.0158] mailbox {00}: >> HereIsTaskForYou: send task to worker: Task id:<4>
+[1465332962.0168] worker  (00): => starts working on task {Task id:<4>}
+[1465332962.1157] worker  (01): <= finished working on task {Task id:<2>}
+[1465332962.1162] mailbox {02}: >> HereIsTaskForYou: send task to worker: Task id:<2>
+[1465332962.1167] mailbox {01}: >> ReadyToWork: end task to worker: Task id:<3>
+[1465332962.1177] worker  (02): => starts working on task {Task id:<2>}
+[1465332962.1182] worker  (01): => starts working on task {Task id:<3>}
+[1465332962.2286] worker  (02): <= finished working on task {Task id:<2>}
+[1465332962.2291] worker  (02): >> HereIsTaskForYou: next actor is not set
+[1465332962.2296] worker  (00): <= finished working on task {Task id:<4>}
+[1465332962.2306] mailbox {01}: >> HereIsTaskForYou: worker is busy, dropping message
+[1465332962.2316] mailbox {00}: >> ReadyToWork: task is not set (yet)
+[1465332962.2321] mailbox {02}: >> ReadyToWork: task is not set (yet)
+[1465332962.3161]       (!) Sending message  ``Task id:<5>''
+[1465332962.3166] mailbox {00}: >> HereIsTaskForYou: send task to worker: Task id:<5>
+[1465332962.3171] worker  (00): => starts working on task {Task id:<5>}
+[1465332962.5164] worker  (00): <= finished working on task {Task id:<5>}
+[1465332962.5169] mailbox {01}: >> HereIsTaskForYou: worker is busy, dropping message
+[1465332962.5179] mailbox {00}: >> ReadyToWork: task is not set (yet)
+[1465332962.6165] worker  (01): <= finished working on task {Task id:<3>}
+[1465332962.6170] mailbox {01}: >> ReadyToWork: end task to worker: Task id:<5>
+[1465332962.6180] mailbox {02}: >> HereIsTaskForYou: send task to worker: Task id:<3>
+[1465332962.6190] worker  (01): => starts working on task {Task id:<5>}
+[1465332962.6200] worker  (02): => starts working on task {Task id:<3>}
+[1465332962.7289] worker  (02): <= finished working on task {Task id:<3>}
+[1465332962.7294] worker  (02): >> HereIsTaskForYou: next actor is not set
+[1465332962.7299] mailbox {02}: >> ReadyToWork: task is not set (yet)
+[1465332963.1163] worker  (01): <= finished working on task {Task id:<5>}
+[1465332963.1168] mailbox {02}: >> HereIsTaskForYou: send task to worker: Task id:<5>
+[1465332963.1173] mailbox {01}: >> ReadyToWork: task is not set (yet)
+[1465332963.1183] worker  (02): => starts working on task {Task id:<5>}
+[1465332963.2233] worker  (02): <= finished working on task {Task id:<5>}
+[1465332963.2238] worker  (02): >> HereIsTaskForYou: next actor is not set
+[1465332963.2248] mailbox {02}: >> ReadyToWork: task is not set (yet)
+[1465332964.6166] Program finished. Press ENTER to quit ...
 ```
