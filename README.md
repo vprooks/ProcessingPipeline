@@ -16,7 +16,7 @@ Current implementation does not allow branching of the pipeline, each node imita
 
 ## Example output
 
-Let us assume delay between device readings is 300ms, there are three nodes with delays 100ms, 500ms, 200ms. The device sends  5 messages, and in the example below the third message is corrupted.
+Let us assume delay between device readings is 300ms, there are three nodes with delays 100ms, 500ms, 200ms. The device sends  5 messages, and in the example below the second message is corrupted.
 
 ```
 [1465332960.8799] Program starts
